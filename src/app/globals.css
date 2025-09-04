@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Light Theme Variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -25,33 +24,6 @@
   --sidebar-foreground: #1f2937;
   --header: #ffffff;
   --header-foreground: #171717;
-}
-
-/* Dark Theme Variables */
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #1a1a1a;
-  --card-foreground: #ededed;
-  --popover: #1a1a1a;
-  --popover-foreground: #ededed;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --accent: #1e293b;
-  --accent-foreground: #f8fafc;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #374151;
-  --input: #374151;
-  --ring: #3b82f6;
-  --sidebar: #1f2937;
-  --sidebar-foreground: #ffffff;
-  --header: #1a1a1a;
-  --header-foreground: #ededed;
 }
 
 @theme inline {
@@ -82,18 +54,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Smooth transitions for theme switching */
-* {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Scrollbar styling for both themes */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -118,7 +85,7 @@ body {
   box-shadow: 0 0 0 2px var(--ring);
 }
 
-/* Custom utility classes for theme-aware styling */
+/* Custom utility classes for styling */
 .bg-theme-card {
   background-color: var(--card);
 }
