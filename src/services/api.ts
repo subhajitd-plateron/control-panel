@@ -182,6 +182,121 @@ export class ApiService {
     }
   }
 
+  static async executeQuery(params: { 
+    query: string;
+    max_rows: number;
+    timeout: number;
+    output_type: 'JSON' | 'CSV';
+  }): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/internal/resiliency/execute-query`, {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify(params)
+      });
+
+      if (!response.ok) {
+        // Try to get error message from response
+        const errorText = await response.text();
+        try {
+          const errorJson = JSON.parse(errorText);
+          throw new Error(errorJson.error || `HTTP error! status: ${response.status}`);
+        } catch {
+          throw new Error(`HTTP error! status: ${response.status}: ${errorText}`);
+        }
+      }
+
+      // Handle CSV response differently
+      if (params.output_type === 'CSV') {
+        const csvText = await response.text();
+        
+        // Try to parse as JSON first (in case it's an error response)
+        try {
+          const jsonResponse = JSON.parse(csvText);
+          if (jsonResponse.error) {
+            return { error: jsonResponse.error };
+          }
+          // If it's a successful JSON response, return it
+          return jsonResponse;
+        } catch {
+          // It's actual CSV data, parse it
+          return {
+            data: {
+              csv: csvText,
+              // Parse CSV into rows for table display
+              ...this.parseCSV(csvText)
+            }
+          };
+        }
+      } else {
+        // Handle JSON response
+        return await response.json();
+      }
+    } catch (error) {
+      console.error('Error executing query:', error);
+      throw error;
+    }
+  }
+
+  private static parseCSV(csvText: string): { columns: string[], rows: string[][], count: number } {
+    const lines = csvText.trim().split('\n');
+    if (lines.length === 0) {
+      return { columns: [], rows: [], count: 0 };
+    }
+
+    // Parse header row
+    const headerLine = lines[0];
+    const columns = headerLine.split(',').map(col => col.replace(/"/g, '').trim());
+
+    // Parse data rows
+    const rows: string[][] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.trim()) {
+        // Simple CSV parsing - handles quoted values
+        const values = this.parseCSVRow(line);
+        rows.push(values);
+      }
+    }
+
+    return {
+      columns,
+      rows,
+      count: rows.length
+    };
+  }
+
+  private static parseCSVRow(row: string): string[] {
+    const values: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < row.length; i++) {
+      const char = row[i];
+      
+      if (char === '"') {
+        if (inQuotes && row[i + 1] === '"') {
+          // Escaped quote
+          current += '"';
+          i++; // Skip next quote
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        // End of value
+        values.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    // Add final value
+    values.push(current.trim());
+    return values;
+  }
+
   private static getMockAnalyticsData(): AnalyticsDashboardResponse {
     return {
       order_counts: {

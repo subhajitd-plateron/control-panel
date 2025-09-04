@@ -60,6 +60,7 @@ const navigation: NavItem[] = [
             {name: 'Reports Dashboard', href: '/analytics/reports', icon: PieChart},
             {name: 'Missing Orders', href: '/analytics/reports/missing-orders', icon: Search},
             {name: 'Sales Mismatch', href: '/analytics/reports/sales-mismatch', icon: AlertTriangle},
+            {name: 'SQL Query', href: '/analytics/reports/sql-query', icon: Database},
         ],
     },
     {
