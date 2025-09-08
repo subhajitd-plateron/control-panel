@@ -1,0 +1,116 @@
+{
+  "pages": [
+    {
+      "name": "Dashboard",
+      "description": "Main overview dashboard with key metrics and quick access panels",
+      "href": "/dashboard",
+      "category": "Overview",
+      "keywords": ["home", "overview", "main", "metrics", "stats", "summary", "widgets"]
+    },
+    {
+      "name": "Customer Loyalty",
+      "description": "Manage customer loyalty programs, rewards and point systems",
+      "href": "/customers/loyalty",
+      "category": "Customers",
+      "keywords": ["rewards", "points", "loyalty", "program", "customer", "retention", "benefits"]
+    },
+    {
+      "name": "Active Users",
+      "description": "View and manage currently active users in the system",
+      "href": "/users/active",
+      "category": "User Management",
+      "keywords": ["users", "active", "online", "logged in", "current", "session"]
+    },
+    {
+      "name": "Add User",
+      "description": "Create new user accounts and set permissions",
+      "href": "/users/add",
+      "category": "User Management",
+      "keywords": ["create", "new", "user", "account", "register", "signup", "permissions"]
+    },
+    {
+      "name": "Device Mapping",
+      "description": "Configure payment device mappings and terminal settings",
+      "href": "/payments/device-mapping",
+      "category": "Payments",
+      "keywords": ["payment", "device", "terminal", "mapping", "pos", "configuration", "hardware"]
+    },
+    {
+      "name": "Analytics Performance",
+      "description": "View system performance metrics and optimization insights",
+      "href": "/analytics/performance",
+      "category": "Analytics",
+      "keywords": ["performance", "metrics", "optimization", "speed", "load", "response", "monitoring"]
+    },
+    {
+      "name": "Reports Dashboard",
+      "description": "Central hub for all reports and data visualization",
+      "href": "/analytics/reports",
+      "category": "Analytics",
+      "keywords": ["reports", "charts", "graphs", "visualization", "data", "analysis", "insights"]
+    },
+    {
+      "name": "Order Sync",
+      "description": "Monitor and manage order synchronization processes",
+      "href": "/analytics/order-sync",
+      "category": "Analytics",
+      "keywords": ["sync", "synchronization", "orders", "data", "integration", "real-time", "processing"]
+    },
+    {
+      "name": "Missing Orders Report",
+      "description": "Identify and track orders that are missing from the system",
+      "href": "/analytics/reports/missing-orders",
+      "category": "Reports",
+      "keywords": ["missing", "orders", "lost", "tracking", "audit", "discrepancy", "investigation"]
+    },
+    {
+      "name": "Sales Mismatch Report",
+      "description": "Detect discrepancies between sales records and actual transactions",
+      "href": "/analytics/reports/sales-mismatch",
+      "category": "Reports",
+      "keywords": ["sales", "mismatch", "discrepancy", "reconciliation", "audit", "difference", "variance"]
+    },
+    {
+      "name": "Slow Queries Report",
+      "description": "Monitor and optimize database queries for better performance",
+      "href": "/analytics/reports/slow-queries",
+      "category": "Reports",
+      "keywords": ["slow", "queries", "database", "performance", "optimization", "sql", "bottleneck"]
+    },
+    {
+      "name": "SQL Query Tool",
+      "description": "Execute custom SQL queries and analyze database data",
+      "href": "/analytics/reports/sql-query",
+      "category": "Reports",
+      "keywords": ["sql", "query", "database", "custom", "analysis", "data", "execute", "tool"]
+    },
+    {
+      "name": "Order Event Details",
+      "description": "View detailed information about specific order events and transactions",
+      "href": "/analytics/reports/order-event",
+      "category": "Reports",
+      "keywords": ["order", "event", "details", "transaction", "history", "tracking", "audit"]
+    },
+    {
+      "name": "Security Settings",
+      "description": "Configure system security policies and access controls",
+      "href": "/system/security",
+      "category": "System",
+      "keywords": ["security", "permissions", "access", "authentication", "authorization", "policies", "protection"]
+    },
+    {
+      "name": "Database Management",
+      "description": "Manage database connections, backups and maintenance tasks",
+      "href": "/system/database",
+      "category": "System",
+      "keywords": ["database", "backup", "maintenance", "connection", "schema", "migration", "admin"]
+    },
+    {
+      "name": "Login",
+      "description": "User authentication and login page",
+      "href": "/login",
+      "category": "Authentication",
+      "keywords": ["login", "signin", "authentication", "credentials", "access", "password", "username"]
+    }
+  ]
+}

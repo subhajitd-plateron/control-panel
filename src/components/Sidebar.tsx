@@ -16,7 +16,12 @@ import {
     ChevronRight,
     Building2,
     Search,
-    AlertTriangle
+    AlertTriangle,
+    RotateCcw,
+    CreditCard,
+    Smartphone,
+    Clock,
+    Award
 } from 'lucide-react';
 import {clsx} from 'clsx';
 
@@ -35,11 +40,12 @@ const navigation: NavItem[] = [
     },
     {
         name: 'Customers',
-        href: '/users',
+        href: '/customers',
         icon: Users,
         children: [
             {name: 'Active Users', href: '/users/active', icon: UserCheck},
             {name: 'Add User', href: '/users/add', icon: UserPlus},
+            {name: 'Loyalty', href: '/customers/loyalty', icon: Award},
         ],
     },
     {
@@ -52,14 +58,24 @@ const navigation: NavItem[] = [
         ],
     },
     {
+        name: 'Payments',
+        href: '/payments',
+        icon: CreditCard,
+        children: [
+            {name: 'Device Mapping', href: '/payments/device-mapping', icon: Smartphone},
+        ],
+    },
+    {
         name: 'Analytics',
         href: '/analytics',
         icon: BarChart3,
         children: [
             {name: 'Performance', href: '/analytics/performance', icon: TrendingUp},
             {name: 'Reports Dashboard', href: '/analytics/reports', icon: PieChart},
+            {name: 'Data Sync', href: '/analytics/order-sync', icon: RotateCcw},
             {name: 'Missing Orders', href: '/analytics/reports/missing-orders', icon: Search},
             {name: 'Sales Mismatch', href: '/analytics/reports/sales-mismatch', icon: AlertTriangle},
+            {name: 'Slow Queries', href: '/analytics/reports/slow-queries', icon: Clock},
             {name: 'SQL Query', href: '/analytics/reports/sql-query', icon: Database},
         ],
     },
@@ -95,7 +111,7 @@ export default function Sidebar({isCollapsed = false}: SidebarProps) {
             isCollapsed ? 'w-16' : 'w-64'
         )}>
             {/* Logo */}
-            <div className="flex items-center p-4 border-b border-theme"
+            <a href="/dashboard" className="flex items-center p-4 border-b border-theme hover:bg-secondary transition-colors cursor-pointer"
                  style={{height: isCollapsed ? '81px' : '81px'}}>
                 <div className="bg-blue-600 p-2 rounded-lg">
                     <Building2 className="w-6 h-6"/>
@@ -106,7 +122,7 @@ export default function Sidebar({isCollapsed = false}: SidebarProps) {
                         <p className="text-sm text-theme-muted">Admin Portal</p>
                     </div>
                 )}
-            </div>
+            </a>
 
             {/* Navigation */}
             <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">

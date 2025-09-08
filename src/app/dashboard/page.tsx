@@ -1,7 +1,9 @@
-import { 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
+'use client';
+
+import {
+  Users,
+  DollarSign,
+  TrendingUp,
   ShoppingCart,
   Activity,
   Calendar,
@@ -11,7 +13,11 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import RecentOrdersPanel from '@/components/RecentOrdersPanel';
+import { ApiService } from '@/services/api';
+import { FailedOrder, SuccessOrder } from '@/types/api';
 
 const statsCards = [
   {
@@ -91,6 +97,53 @@ const quickActions = [
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [recentFailedOrders, setRecentFailedOrders] = useState<FailedOrder[]>([]);
+  const [recentSuccessOrders, setRecentSuccessOrders] = useState<SuccessOrder[]>([]);
+  const [ordersLastUpdated, setOrdersLastUpdated] = useState<Date | null>(null);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  // Fetch recent orders data on component mount
+  useEffect(() => {
+    const fetchRecentOrders = async () => {
+      try {
+        setOrdersLoading(true);
+        const [failed, success] = await Promise.all([
+          ApiService.fetchFailedOrders(3),
+          ApiService.fetchSuccessOrders(3)
+        ]);
+
+        setRecentFailedOrders(failed.data || []);
+        setRecentSuccessOrders(success.data || []);
+        setOrdersLastUpdated(new Date());
+      } catch (error) {
+        console.error('Failed to fetch recent orders:', error);
+        // Keep empty arrays on error
+        setRecentFailedOrders([]);
+        setRecentSuccessOrders([]);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    fetchRecentOrders();
+  }, []);
+
+  const handleOrdersRefresh = async () => {
+    const [failed, success] = await Promise.all([
+      ApiService.fetchFailedOrders(3),
+      ApiService.fetchSuccessOrders(3)
+    ]);
+
+    setRecentFailedOrders(failed.data || []);
+    setRecentSuccessOrders(success.data || []);
+    setOrdersLastUpdated(new Date());
+  };
+
+  const handleOrderClick = (refId: string) => {
+    router.push(`/analytics/reports/order-event/${refId}`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -239,7 +292,13 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Orders Panel */}
-      <RecentOrdersPanel />
+      <RecentOrdersPanel
+        failedOrders={recentFailedOrders}
+        successOrders={recentSuccessOrders}
+        onRefresh={handleOrdersRefresh}
+        lastUpdated={ordersLastUpdated}
+        onOrderClick={handleOrderClick}
+      />
 
       {/* Performance Charts Placeholder */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
