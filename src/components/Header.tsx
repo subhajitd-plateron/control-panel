@@ -10,13 +10,8 @@ import {
   Settings, 
   LogOut,
   ChevronDown,
-  Sun,
-  Moon
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { useTheme } from '../contexts/ThemeContext';
-import SearchDropdown from './SearchDropdown';
-
 interface HeaderProps {
   onToggleSidebar: () => void;
   isSidebarCollapsed: boolean;
@@ -26,9 +21,6 @@ export default function Header({ onToggleSidebar, isSidebarCollapsed }: HeaderPr
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
-
   const notifications = [
     {
       id: 1,
@@ -114,20 +106,8 @@ export default function Header({ onToggleSidebar, isSidebarCollapsed }: HeaderPr
           </div>
         </div>
 
-        {/* Right Side - Theme Toggle, Notifications & Profile */}
+        {/* Right Side - Notifications & Profile */}
         <div className="flex items-center space-x-4">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-lg hover:bg-secondary transition-colors"
-            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-          >
-            {theme === 'light' ? (
-              <Moon className="w-5 h-5 text-theme-header" />
-            ) : (
-              <Sun className="w-5 h-5 text-theme-header" />
-            )}
-          </button>
           {/* Notifications */}
           <div className="relative">
             <button
