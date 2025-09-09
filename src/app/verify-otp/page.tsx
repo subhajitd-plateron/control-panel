@@ -2,14 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { API_CONFIG } from '@/constants/api';
 
 export default function VerifyOTPPage() {
-  const [otp, setOTP] = useState(['', '', '', '']);
+  const [otp, setOTP] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+  const [resendTimer, setResendTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
+
+  // Timer effect
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => {
+        setResendTimer(resendTimer - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setCanResend(true);
+    }
+  }, [resendTimer]);
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -20,29 +36,59 @@ export default function VerifyOTPPage() {
     e.preventDefault();
     const otpValue = otp.join('');
     
-    if (otpValue.length !== 4) {
-      showToast('Please enter all 4 digits', 'error');
+    if (otpValue.length !== 6) {
+      showToast('Please enter all 6 digits', 'error');
       return;
     }
 
     setIsLoading(true);
     
-    // Simulate API call delay
-    setTimeout(() => {
-      if (otpValue === '6666') {
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH_VERIFY_OTP}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': API_CONFIG.HEADERS.CONTENT_TYPE,
+        },
+        body: JSON.stringify({
+          email: email,
+          otp: parseInt(otpValue)
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle error response
+        showToast(data.error || 'Invalid OTP. Please try again.', 'error');
+        setOTP(['', '', '', '', '', '']);
+        // Focus first input
+        const firstInput = document.getElementById('otp-0');
+        firstInput?.focus();
+        return;
+      }
+
+      // Success response - store token and redirect
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('tokenExpiry', (Date.now() + (data.expires_in * 1000)).toString());
         showToast('OTP verified successfully! Redirecting...', 'success');
         setTimeout(() => {
           router.push('/dashboard');
         }, 1500);
       } else {
-        showToast('Invalid OTP. Please try again.', 'error');
-        setOTP(['', '', '', '']);
-        // Focus first input
-        const firstInput = document.getElementById('otp-0');
-        firstInput?.focus();
+        showToast('Authentication failed. Please try again.', 'error');
       }
+
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      showToast('Network error. Please check your connection and try again.', 'error');
+      setOTP(['', '', '', '', '', '']);
+      // Focus first input
+      const firstInput = document.getElementById('otp-0');
+      firstInput?.focus();
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleOTPChange = (index: number, value: string) => {
@@ -52,7 +98,7 @@ export default function VerifyOTPPage() {
       setOTP(newOTP);
       
       // Auto focus next input
-      if (value && index < 3) {
+      if (value && index < 5) {
         const nextInput = document.getElementById(`otp-${index + 1}`);
         nextInput?.focus();
       }
@@ -66,8 +112,45 @@ export default function VerifyOTPPage() {
     }
   };
 
-  const handleResendOTP = () => {
-    showToast('OTP resent successfully!', 'success');
+  const handleResendOTP = async () => {
+    if (!canResend || isResending) return;
+    
+    setIsResending(true);
+    
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH_SEND_OTP}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': API_CONFIG.HEADERS.CONTENT_TYPE,
+        },
+        body: JSON.stringify({
+          email: email
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.error || 'Failed to resend OTP. Please try again.', 'error');
+        return;
+      }
+
+      showToast('OTP resent successfully!', 'success');
+      // Reset timer
+      setResendTimer(60);
+      setCanResend(false);
+      // Clear current OTP
+      setOTP(['', '', '', '', '', '']);
+      // Focus first input
+      const firstInput = document.getElementById('otp-0');
+      firstInput?.focus();
+
+    } catch (error) {
+      console.error('Error resending OTP:', error);
+      showToast('Network error. Please try again.', 'error');
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -134,7 +217,7 @@ export default function VerifyOTPPage() {
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Enter Verification Code</h2>
               <p className="text-gray-600 text-center">
-                Enter the 4-digit code sent to <br />
+                Enter the 6-digit code sent to <br />
                 <span className="font-medium">{email}</span>
               </p>
             </div>
@@ -193,23 +276,27 @@ export default function VerifyOTPPage() {
                 </button>
                 
                 <div className="text-center">
-                  <button
-                    type="button"
-                    onClick={handleResendOTP}
-                    disabled={isLoading}
-                    className="text-sm text-primary hover:opacity-80 transition-colors disabled:opacity-50"
-                  >
-                    Didn't receive code? Resend OTP
-                  </button>
+                  <div className="text-sm text-theme-muted">
+                    Didn't receive code?
+                  </div>
+                  {canResend ? (
+                    <button
+                      type="button"
+                      onClick={handleResendOTP}
+                      disabled={isLoading || isResending}
+                      className="text-sm text-primary hover:opacity-80 transition-colors disabled:opacity-50 mt-1"
+                    >
+                      {isResending ? 'Resending...' : 'Resend OTP'}
+                    </button>
+                  ) : (
+                    <div className="text-sm text-theme-muted mt-1">
+                      Resend OTP in {resendTimer}s
+                    </div>
+                  )}
                 </div>
               </div>
             </form>
 
-            {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-accent rounded-lg">
-              <p className="text-sm text-primary font-medium mb-2">Demo OTP:</p>
-              <p className="text-xs text-primary">Enter: 6666</p>
-            </div>
           </div>
 
           {/* Footer */}
