@@ -5,6 +5,7 @@ export const API_CONFIG = {
     SYNC_STATUS: '/internal/orders/sync-status',
     ANALYTICS_DASHBOARD: '/internal/analytics/dashboard',
     SYNC_ORDER: '/sync',
+    SYNC_DATETIME: '/sync/internal/restaurant-date-time-settings',
     FAILED_ORDERS: '/internal/orders/failed-orders',
     SUCCESS_ORDERS: '/internal/orders/success-orders',
     SALES_MISMATCH: '/internal/orders/sales-mismatch',

@@ -12,7 +12,6 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { clsx } from 'clsx';
-
 interface HeaderProps {
   onToggleSidebar: () => void;
   isSidebarCollapsed: boolean;
@@ -22,7 +21,6 @@ export default function Header({ onToggleSidebar, isSidebarCollapsed }: HeaderPr
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
   const notifications = [
     {
       id: 1,
@@ -66,16 +64,44 @@ export default function Header({ onToggleSidebar, isSidebarCollapsed }: HeaderPr
           </button>
 
           {/* Search Bar */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+          <div className="relative w-96">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search admin panel features..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsSearchOpen(true);
+                }}
+                onFocus={() => setIsSearchOpen(true)}
+                className="pl-10 pr-4 py-2 w-full border border-theme rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 bg-theme-card text-theme-foreground"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Search admin panel features..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 w-96 border border-theme rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 bg-theme-card text-theme-foreground"
+            <SearchDropdown
+              query={searchQuery}
+              onQueryChange={(query) => {
+                setSearchQuery(query);
+                setIsSearchOpen(true);
+              }}
+              onNavigate={(href) => {
+                // Close all dropdowns
+                setIsSearchOpen(false);
+                setShowNotifications(false);
+                setShowProfile(false);
+                setSearchQuery('');
+                
+                // Navigate to the page
+                window.location.href = href;
+              }}
+              isOpen={isSearchOpen}
+              onClose={() => {
+                setIsSearchOpen(false);
+                setSearchQuery('');
+              }}
             />
           </div>
         </div>

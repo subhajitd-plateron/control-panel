@@ -81,6 +81,17 @@ export interface SyncOrderResponse {
   error?: string;
 }
 
+// DateTime Sync Types
+export interface SyncDateTimeRequest {
+  restaurant_ref_id: string;
+}
+
+export interface SyncDateTimeResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
 // Sales Mismatch Report Types
 export interface MismatchRecord {
   order_ref_id: string;
@@ -101,4 +112,96 @@ export interface MismatchReportResponse {
   data: MismatchRecord[] | null;
   message: string;
   error?: string;
+}
+
+// Slow Queries Types
+export interface SlowQuery {
+  avg_exec_time: number;
+  min_exec_time: number;
+  query: string;
+  pid: number;
+  calls: number;
+}
+
+export interface SlowQueriesResponse {
+  data: {
+    slowLogs: SlowQuery[];
+  };
+  message: string;
+}
+
+// Restaurant Device Types
+export interface RestaurantChecklist {
+  items: ChecklistItem[];
+}
+
+export interface ChecklistItem {
+  name: string;
+  required: boolean;
+  completed: boolean;
+  key: string;
+  isEdited: boolean;
+  description: string;
+  subItems: SubChecklistItem[];
+}
+
+export interface SubChecklistItem {
+  name: string;
+  completed: boolean;
+  required: boolean;
+  key: string;
+  isEdited: boolean;
+}
+
+export interface RestaurantDevice {
+  _id: string;
+  name: string;
+  refId: string;
+  subscriptions: any[];
+  checklist: RestaurantChecklist;
+}
+
+export interface RestaurantDevicesResponse {
+  success: boolean;
+  data: {
+    meta: {
+      total: number;
+      page: number;
+      limit: number;
+    }[];
+    items: RestaurantDevice[];
+  };
+  message: string;
+}
+
+export interface RestaurantDevicesRequest {
+  limit?: number;
+  page?: number;
+}
+
+// Device Details Types
+export interface DeviceDetail {
+  refId: string;
+  deviceId: string;
+  type: string;
+  name: string;
+}
+
+export interface DeviceDetailsResponse {
+  success: boolean;
+  data: DeviceDetail[];
+  message: string;
+}
+
+// Payment Settings Types
+export interface PaymentSettings {
+  isCouponEnabled: boolean;
+  defaultGiftCardPaymentMode?: string;
+  giftCardBalanceCheck?: boolean;
+}
+
+export interface PaymentSettingsResponse {
+  success: boolean;
+  data: PaymentSettings;
+  message: string;
 }

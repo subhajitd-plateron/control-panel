@@ -9,14 +9,11 @@ import {
   CheckCircle,
   RefreshCw,
   Loader2,
-  ExternalLink,
-  Search,
   Activity,
   TrendingUp,
   Clock,
   XCircle,
-  BarChart3,
-  RotateCcw
+  BarChart3
 } from 'lucide-react';
 import { ApiService } from '@/services/api';
 import { AnalyticsDashboardResponse, FailedOrder, SuccessOrder } from '@/types/api';
@@ -30,11 +27,6 @@ export default function AnalyticsReportsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
-  
-  // Sync order states
-  const [syncOrderId, setSyncOrderId] = useState('');
-  const [syncLoading, setSyncLoading] = useState(false);
-  const [syncResult, setSyncResult] = useState<{ success: boolean; message: string } | null>(null);
 
   // Add refs to track ongoing requests and prevent duplicates
   const fetchInProgressRef = useRef(false);
@@ -99,38 +91,6 @@ export default function AnalyticsReportsPage() {
     // Removed fetchFailedOrders() to prevent duplicate API calls
   };
 
-  const handleSyncOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!syncOrderId.trim()) return;
-
-    setSyncLoading(true);
-    setSyncResult(null);
-
-    try {
-      const result = await ApiService.syncOrder({ order_ref_id: syncOrderId.trim() });
-      
-      if (result.success) {
-        setSyncResult({ 
-          success: true, 
-          message: result.message || 'Order synced successfully' 
-        });
-      } else {
-        setSyncResult({ 
-          success: false, 
-          message: result.error || 'Failed to sync order' 
-        });
-      }
-    } catch (err) {
-      setSyncResult({ 
-        success: false, 
-        message: 'An unexpected error occurred while syncing the order' 
-      });
-    } finally {
-      setSyncLoading(false);
-      // Clear result after 5 seconds
-      setTimeout(() => setSyncResult(null), 5000);
-    }
-  };
 
   const handleOrderClick = (refId: string) => {
     router.push(`/analytics/reports/order-event/${refId}`);
@@ -356,86 +316,6 @@ export default function AnalyticsReportsPage() {
         onOrderClick={handleOrderClick}
       />
 
-      {/* Sync Order Section */}
-      <div className="bg-theme-card rounded-xl shadow-sm border border-theme">
-        <div className="p-6 border-b border-theme">
-          <div className="flex items-center">
-            <div className="bg-purple-100 rounded-full p-3 mr-4">
-              <RotateCcw className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-theme-foreground">Manual Order Sync</h3>
-              <p className="text-theme-muted text-sm">Manually trigger synchronization for a specific order</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="p-6">
-          <form onSubmit={handleSyncOrder} className="space-y-4">
-            <div>
-              <label htmlFor="syncOrderId" className="block text-sm font-medium text-theme-foreground mb-2">
-                Order Reference ID
-              </label>
-              <div className="relative">
-                <input
-                  id="syncOrderId"
-                  type="text"
-                  value={syncOrderId}
-                  onChange={(e) => setSyncOrderId(e.target.value)}
-                  placeholder="Enter order reference ID to sync..."
-                  className="w-full px-4 py-3 pl-12 border border-theme rounded-lg bg-theme-background text-theme-foreground placeholder-theme-muted focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  disabled={syncLoading}
-                />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-theme-muted">
-                This will attempt to re-sync the specified order with the reports database.
-              </div>
-              <button
-                type="submit"
-                disabled={!syncOrderId.trim() || syncLoading}
-                className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                {syncLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Syncing...
-                  </>
-                ) : (
-                  <>
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Sync Order
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-
-          {/* Sync Result */}
-          {syncResult && (
-            <div className={`mt-4 p-4 rounded-lg border ${syncResult.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-              <div className="flex items-center">
-                {syncResult.success ? (
-                  <CheckCircle className="w-5 h-5 text-green-600 mr-3 flex-shrink-0" />
-                ) : (
-                  <XCircle className="w-5 h-5 text-red-600 mr-3 flex-shrink-0" />
-                )}
-                <div>
-                  <h4 className={`font-medium ${syncResult.success ? 'text-green-800' : 'text-red-800'} mb-1`}>
-                    {syncResult.success ? 'Sync Successful' : 'Sync Failed'}
-                  </h4>
-                  <p className={`text-sm ${syncResult.success ? 'text-green-700' : 'text-red-700'}`}>
-                    {syncResult.message}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

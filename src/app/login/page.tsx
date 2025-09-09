@@ -100,7 +100,6 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-
       {/* Right Side - Login Form */}
       <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-8">
         <div className="max-w-md w-full">
@@ -171,6 +170,7 @@ export default function LoginPage() {
             </form>
 
           </div>
+
 
           {/* Footer */}
           <div className="text-center mt-8">
